@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db
+from models import db,User
 #from models import Person
 
 app = Flask(__name__)
@@ -28,14 +28,55 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+@app.route('/user', methods=['POST', 'GET'])
+def handle_user():
+    if request.method == 'POST':
+        body = request.get_json()
 
-    response_body = {
-        "hello": "world"
-    }
+        if body is None:
+            raise APIException ("You need to specify the request body as a json object ", status_code=400)
+        if "first_name" not in body:
+            raise APIException ("You need to specify first name", status_code=400)
+        if "last_name" not in body:
+            raise APIException ("You need to specify last name", status_code=400)
+        if "email" not in body:
+            raise APIException ("You need to specify email", status_code=400)
+        if "password" not in body:
+            raise APIException ("You need to specify password", status_code=400)
+        if "phone" not in body:
+            raise APIException ("You need to specify phone number", status_code=400)
 
-    return jsonify(response_body), 200
+        user1=user(first_name=body["first_name"],last_name=body["last_name"],email=body["email"],password=body["password"],phone=body["phone"])
+        db.session.add(user1)
+        db.session.commit()
+
+        return "ok", 200
+    
+    elif request.method=="GET":
+        user2=User.query.all()
+        alluser=list(map(lambda x: x.serialize(),user2))
+        return jsonify(alluser),200
+
+    return "Invalid Method", 404
+
+
+
+
+
+    
+
+
+        
+     
+
+
+
+
+
+
+
+
+    # return jsonify(response_body), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
