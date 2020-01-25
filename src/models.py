@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import expression
+
 
 db = SQLAlchemy()
 
@@ -9,10 +9,10 @@ class User(db.Model):
     last_name = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
-    is_hero = db.Column(db.Boolean, server_default=expression.true(), nullable=False)
+    is_hero = db.Column(db.Integer, nullable=False)
     zip_code = db.Column(db.String(80), unique=False, nullable=False)
     phone = db.Column(db.String(80), unique=True, nullable=False)
-    share_phone = db.Column(db.Boolean, server_default=expression.true(), nullable=False)
+    share_phone = db.Column(db.Integer, nullable=False)
 
 
     def __repr__(self):
