@@ -9,12 +9,8 @@ class User(db.Model):
     last_name = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
-    #is_hero = db.Column(db.Integer, nullable=False)
-    #zip_code = db.Column(db.String(80), unique=False, nullable=False)
     phone = db.Column(db.String(80), unique=True, nullable=False)
-    share_phone = db.Column(db.Integer, nullable=False)
-    children = relationship("Incident")
-
+    share_phone = db.Column(db.String(80), nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.first_name
@@ -26,8 +22,6 @@ class User(db.Model):
             "last_name": self.last_name,
             "email": self.email,
             "password": self.password,
-            #"is_hero": self.is_hero,
-            #"zip_code": self.zip_code,
             "phone": self.phone,
             "share_phone": self.share_phone
         }

@@ -45,8 +45,10 @@ def handle_user():
             raise APIException ("You need to specify password", status_code=400)
         if "phone" not in body:
             raise APIException ("You need to specify phone number", status_code=400)
+        if "share_phone" not in body:
+            raise APIException ("You need to specify share_phone", status_code=400)
 
-        user1=user(first_name=body["first_name"],last_name=body["last_name"],email=body["email"],password=body["password"],phone=body["phone"])
+        user1=User(first_name=body["first_name"],last_name=body["last_name"],email=body["email"],password=body["password"],phone=body["phone"],share_phone=body["share_phone"])
         db.session.add(user1)
         db.session.commit()
 
@@ -59,24 +61,6 @@ def handle_user():
 
     return "Invalid Method", 404
 
-
-
-
-
-    
-
-
-        
-     
-
-
-
-
-
-
-
-
-    # return jsonify(response_body), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
