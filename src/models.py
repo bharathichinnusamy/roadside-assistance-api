@@ -24,31 +24,30 @@ class User(db.Model):
             "phone": self.phone,
             "share_phone": self.share_phone
         }
-# class Hero(db.Model):
-#     hero_id = db.Column(db.Integer, primary_key=True)
-#     first_name = db.Column(db.String(80), unique=False, nullable=False)
-#     last_name = db.Column(db.String(80), unique=False, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password = db.Column(db.String(120), unique=True, nullable=False)
-#     zip_code = db.Column(db.String(80), unique=False, nullable=False)
-#     phone = db.Column(db.String(80), unique=True, nullable=False)
-#     share_phone = db.Column(db.Integer, nullable=False)
-#     children = relationship("Incident")
+class Hero(db.Model):
+    hero_id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(80), unique=False, nullable=False)
+    last_name = db.Column(db.String(80), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=True, nullable=False)
+    zip_code = db.Column(db.String(80), unique=False, nullable=False)
+    phone = db.Column(db.String(80), unique=True, nullable=False)
+    share_phone = db.Column(db.Integer, nullable=False)
 
-#     def __repr__(self):
-#         return '<Hero %r>' % self.first_name
+    def __repr__(self):
+        return '<Hero %r>' % self.first_name
 
-#     def serialize(self):
-#         return {
-#             "hero_id": self.hero_id,
-#             "first_name": self.first_name,
-#             "last_name": self.last_name,
-#             "email": self.email,
-#             "password": self.password,
-#             "zip_code": self.zip_code,
-#             "phone": self.phone,
-#             "share_phone": self.share_phone
-#         }
+    def serialize(self):
+        return {
+            "hero_id": self.hero_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "password": self.password,
+            "zip_code": self.zip_code,
+            "phone": self.phone,
+            "share_phone": self.share_phone
+        }
 
 # class Service(db.Model):
 #     servicetype_id = db.Column(db.Integer, primary_key=True)
