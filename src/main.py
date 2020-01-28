@@ -8,7 +8,6 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from models import db,User
-#from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -28,8 +27,8 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['POST', 'GET'])
-def handle_user():
+@app.route('/signup', methods=['POST', 'GET'])
+def handle_signup():
     if request.method == 'POST':
         body = request.get_json()
 
@@ -51,8 +50,7 @@ def handle_user():
         user1=User(first_name=body["first_name"],last_name=body["last_name"],email=body["email"],password=body["password"],phone=body["phone"],share_phone=body["share_phone"])
         db.session.add(user1)
         db.session.commit()
-
-        return "ok", 200
+        return "created successfully", 200
     
     elif request.method=="GET":
         user2=User.query.all()
@@ -60,6 +58,35 @@ def handle_user():
         return jsonify(alluser),200
 
     return "Invalid Method", 404
+
+@app.route('/update/id',methods=['PUT'])
+def handle_update(id):
+    obj1=User.query.get(id)
+    newobj=request.get_json()
+
+    if first_name in newobj:
+        obj1.first_name=newobj["first_name"]
+    if last_name in newobj:
+        obj1.last_name=newobj["last_name"]
+    if email in newobj:
+        obj1.email=newobj["email"]
+    if password in newobj:
+        obj1.password=newobj["password"]
+    if phone in newobj:
+        obj1.phone=newobj["phone"]
+    if share_phone in newobj:
+        obj1.share_phone=newobj["share_phone"]
+    
+    db.session.merge(obj1)
+    db.session.commit()
+    return "updated successfully"
+
+@app.route('/delete/id', methods=['DELETE'])
+def handle_delete(id):
+    deleteone=obj1=User.query.get(id)
+    db.session.delete(deleteone)
+    db.session.commit()
+    return "deleted successfully"
 
 
 # this only runs if `$ python src/main.py` is executed
