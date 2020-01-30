@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -15,6 +14,7 @@ class User(db.Model):
     password = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(80), unique=True, nullable=False)
     share_phone = db.Column(db.Integer, nullable=False)
+    children = relationship("Incident", backref="user")
 
     def __repr__(self):
         return '<User %r>' % self.first_name
@@ -39,7 +39,6 @@ class Hero(db.Model):
     phone = db.Column(db.String(80), unique=True, nullable=False)
     share_phone = db.Column(db.Integer, nullable=False)
     children = relationship("Incident", backref="hero")
-    #children = relationship("Incident")
 
     def __repr__(self):
         return '<Hero %r>' % self.first_name
@@ -55,7 +54,6 @@ class Hero(db.Model):
             "phone": self.phone,
             "share_phone": self.share_phone
         }
-
 # class Service(db.Model):
 #     servicetype_id = db.Column(db.Integer, primary_key=True)
 #     servicetype_name = db.Column(db.String(80), unique=False, nullable=False)
@@ -71,17 +69,17 @@ class Hero(db.Model):
 #         }
 class Incident(db.Model):
     Incident_id = db.Column(db.Integer, primary_key=True)
-    hero_id = Column(Integer, ForeignKey('hero.hero_id'))
-   # hero_id = db.Column(db.Integer, db.ForeignKey("Hero.hero_id"))
-    #user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
-   # servicetype_id = db.Column(db.Integer, db.ForeignKey("Service.servicetype_id"))
-    #timestamp = 
-
+    hero_id = db.Column(Integer, ForeignKey('hero.hero_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    # servicetype_id = db.Column(db.Integer, db.ForeignKey("Service.servicetype_id"))
+   
     def __repr__(self):
-        return '<Service %r>' % self.servicetype_name
+        return '<Service %r>' % self.Incident_id
 
     def serialize(self):
         return {
-            #"service_id": self.user_id,
-            #"servicetype_name": self.servicetype_name
+            "Incident_id": self.Incident_id,
+            "hero_id": self.hero_id1,
+            "user_id": self.user_id1,
+            # "servicetype_id": self.servicetype_id
         }
