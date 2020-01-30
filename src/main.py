@@ -90,10 +90,18 @@ def handle_updatedelete(id):
 @app.route('/user/login',methods=['POST'])
 def handle_userlogin():
     item=request.get_json()
+
+    if item is None:
+        raise APIException ("You need to specify the request body as a json object ", status_code=400)
+    if "email" not in item:
+        raise APIException ("You need to specify email", status_code=400)
+    if "password" not in item:
+        raise APIException ("You need to specify password", status_code=400)
+
     allitems=User.query.filter(User.email==item["email"],User.password==item["password"]).first()
-    
+
     if allitems is None:
-        return "your email or password is incorrect"
+        return "your email or password is incorrect",401
     else:
         return "perfectly matched"
 
@@ -113,7 +121,7 @@ def createandread():
         if "password" not in herodata1:
             raise APIException ("You need to specify password", status_code=400)
         if "zip_code" not in herodata1:
-            raise APIException ("You need to specify password", status_code=400)    
+            raise APIException ("You need to specify zipcode", status_code=400)    
         if "phone" not in herodata1:
             raise APIException ("You need to specify phone number", status_code=400)
         if "share_phone" not in herodata1:
@@ -163,9 +171,17 @@ def updateanddelete(id):
 # Login end point for Hero
 @app.route('/hero/login',methods=['POST'])
 def handle_heroplogin():
-    herobody=request.get_json()
+    herobody=request.get_json() 
+
+    if herobody is None:
+        raise APIException ("You need to specify the request body as a json object ", status_code=400)
+    if "email" not in herobody:
+        raise APIException ("You need to specify email", status_code=400)
+    if "password" not in herobody:
+        raise APIException ("You need to specify password", status_code=400)
+
     heroobj=Hero.query.filter(Hero.email==herobody["email"],Hero.password==herobody["password"]).first()
-    print(heroobj)
+    
     if heroobj is None:
         return "your email or password is incorrect"
     else:
