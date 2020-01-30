@@ -86,6 +86,17 @@ def handle_updatedelete(id):
         db.session.commit()
         return "deleted successfully",200
 
+# Login end point for User      
+@app.route('/user/login',methods=['POST'])
+def handle_userlogin():
+    item=request.get_json()
+    allitems=User.query.filter(User.email==item["email"],User.password==item["password"]).first()
+    
+    if allitems is None:
+        return "your email or password is incorrect"
+    else:
+        return "perfectly matched"
+
 @app.route('/hero',methods=['POST','GET'])
 def createandread():
     if request.method=='POST':
@@ -148,6 +159,17 @@ def updateanddelete(id):
         db.session.delete(herodata7)
         db.session.commit()
         return "deleted it",200
+
+# Login end point for Hero
+@app.route('/hero/login',methods=['POST'])
+def handle_heroplogin():
+    herobody=request.get_json()
+    heroobj=Hero.query.filter(Hero.email==herobody["email"],Hero.password==herobody["password"]).first()
+    print(heroobj)
+    if heroobj is None:
+        return "your email or password is incorrect"
+    else:
+        return "perfectly matched" 
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
