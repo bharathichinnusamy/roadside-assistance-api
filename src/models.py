@@ -68,7 +68,7 @@ class Service(db.Model):
 
      def serialize(self):
          return {
-             "service_id": self.user_id,
+             "servicetype_id": self.servicetype_id,
              "servicetype_name": self.servicetype_name
           }
 
