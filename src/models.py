@@ -2,6 +2,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+from sqlalchemy.ext.declarative import declared_attr
+
+
 
 Base = declarative_base()
 db = SQLAlchemy()
@@ -54,32 +58,39 @@ class Hero(db.Model):
             "phone": self.phone,
             "share_phone": self.share_phone
         }
-# class Service(db.Model):
-#     servicetype_id = db.Column(db.Integer, primary_key=True)
-#     servicetype_name = db.Column(db.String(80), unique=False, nullable=False)
-#     children = relationship("Incident")
+class Service(db.Model):
+     servicetype_id = db.Column(db.Integer, primary_key=True)
+     servicetype_name = db.Column(db.String(80), unique=False, nullable=False)
+     children = relationship("Incident", backref="service")
 
-#     def __repr__(self):
-#         return '<Service %r>' % self.servicetype_name
+     def __repr__(self):
+         return '<Service %r>' % self.servicetype_name
 
-#     def serialize(self):
-#         return {
-#             "service_id": self.user_id,
-#             "servicetype_name": self.servicetype_name
-#         }
-class Incident(db.Model):
-    Incident_id = db.Column(db.Integer, primary_key=True)
-    hero_id = db.Column(Integer, ForeignKey('hero.hero_id'))
+     def serialize(self):
+         return {
+             "service_id": self.user_id,
+             "servicetype_name": self.servicetype_name
+          }
+
+class TimestampMixin(object):
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+
+class Incident(TimestampMixin,db.Model):
+    incident_id = db.Column(db.Integer, primary_key=True)
+    hero_id = db.Column(db.Integer, ForeignKey('hero.hero_id'))
     user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
-    # servicetype_id = db.Column(db.Integer, db.ForeignKey("Service.servicetype_id"))
-   
+    servicetype_id = db.Column(db.Integer, db.ForeignKey("service.servicetype_id"))
+
     def __repr__(self):
-        return '<Service %r>' % self.Incident_id
+        return '<Incident %r>' % self.Incident_id
 
     def serialize(self):
         return {
             "Incident_id": self.Incident_id,
-            "hero_id": self.hero_id1,
-            "user_id": self.user_id1,
-            # "servicetype_id": self.servicetype_id
+            "hero_id": self.hero_id,
+            "user_id": self.user_id,
+            "servicetype_id": self.servicetype_id,
         }
+
