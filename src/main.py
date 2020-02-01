@@ -7,7 +7,9 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db,User,Hero,Incident
+from models import db,User,Hero,Incident,Service
+import requests
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -186,6 +188,27 @@ def handle_heroplogin():
         return "your email or password is incorrect"
     else:
         return "perfectly matched" 
+
+# Incident table
+@app.route('/incident',methods=['POST'])
+def handle_incident():
+    firststep=request.get_json()
+    secondstep=User.query.filter(User.email==firststep["email"]).first()
+    thridstep=Service.query.filter(Service.servicetype_name==firststep["servicetype_name"]).first()
+    fourthstep=Incident(user_id=secondstep.user_id,servicetype_id=thridstep.servicetype_id,latitude=firststep["latitude"],longitude=firststep["longitude"])
+    db.session.add(fourthstep)
+    db.session.commit()
+# getting a User's zipcode by using latitude & longitude
+    response = requests.get("https://maps.googleapis.com/maps/api/geocode/json",params={'latlng':'40.714224,-73.961452','key':'AIzaSyDnPdnUPzUc0NaVzp4hS6Y_dhPSE8rvK1s'})
+    response1=response.json()
+    list1=response1["results"][0]["address_components"]
+    for obj in list1:
+        if obj["types"][0]=="postal_code":
+            print(obj["long_name"])
+    
+    return "incident created successfully"
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
