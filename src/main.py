@@ -2,12 +2,16 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for,redirect
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db,User,Hero,Incident
+from models import db,User,Hero,Incident,Service
+import requests
+from flask_jwt_simple import (
+    JWTManager, jwt_required, create_jwt, get_jwt_identity,decode_jwt
+)
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -16,6 +20,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
+
+# Setup the Flask-JWT-Simple extension
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")  # Change this!
+jwt = JWTManager(app)
+
+@app.before_request
+def checkjwt():
+    not_protected=["/hero/login","/user/login"]
+
+    if request.path not in not_protected:
+        decoded=decode_jwt(request.cookies.get("token"))
+        print(decoded)
+        return jsonify(decoded)
+    else:         
+        # this print statement let you know you are at a login page or not protected route
+        print("not protected")
+        # print(decode_jwt(request.cookies.get("token")))
+        print(request.path)
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -181,11 +203,54 @@ def handle_heroplogin():
         raise APIException ("You need to specify password", status_code=400)
 
     heroobj=Hero.query.filter(Hero.email==herobody["email"],Hero.password==herobody["password"]).first()
-    
+
     if heroobj is None:
-        return "your email or password is incorrect"
-    else:
-        return "perfectly matched" 
+        token=create_jwt(identity="heroobj.email")
+        ret = {'jwt':token }
+        ret=jsonify(ret)
+        ret.set_cookie("token",token,secure=True)
+        return ret,200
+        # return "your email or password is incorrect"
+    else: 
+        # Identity can be any data that is json serializable
+        ret = {'jwt': create_jwt(identity=heroobj.email)}
+        return jsonify(ret), 200
+        # return "perfectly matched" 
+
+# Service table
+@app.route('/service',methods=['POST'])
+def handle_service():
+    service1=request.get_json()
+
+    if service1 is None:
+        raise APIException ("You need to specify the request body as a json object ", status_code=400)
+    if "servicetype_name" not in service1:
+        raise APIException ("You need to specify servicetype_name", status_code=400)
+
+    sercice2=Service(servicetype_name=service1["servicetype_name"])
+    db.session.add(sercice2)
+    db.session.commit()
+    return "services created successfully"
+
+# Incident table
+@app.route('/incident',methods=['POST'])
+def handle_incident():
+    firststep=request.get_json()
+    secondstep=User.query.filter(User.email==firststep["email"]).first()
+    thridstep=Service.query.filter(Service.servicetype_name==firststep["servicetype_name"]).first()
+    fourthstep=Incident(user_id=secondstep.user_id,servicetype_id=thridstep.servicetype_id,latitude=firststep["latitude"],longitude=firststep["longitude"])
+    db.session.add(fourthstep)
+    db.session.commit()
+# getting a User's zipcode by using latitude & longitude
+    response = requests.get("https://maps.googleapis.com/maps/api/geocode/json",params={'latlng':'40.714224,-73.961452','key':'AIzaSyDnPdnUPzUc0NaVzp4hS6Y_dhPSE8rvK1s'})
+    response1=response.json()
+    list1=response1["results"][0]["address_components"]
+    for obj in list1:
+        if obj["types"][0]=="postal_code":
+            print(obj["long_name"])
+    
+    return "incident created successfully"
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

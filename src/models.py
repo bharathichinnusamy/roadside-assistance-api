@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -68,7 +68,7 @@ class Service(db.Model):
 
      def serialize(self):
          return {
-             "service_id": self.user_id,
+             "servicetype_id": self.servicetype_id,
              "servicetype_name": self.servicetype_name
           }
 
@@ -81,6 +81,8 @@ class Incident(TimestampMixin,db.Model):
     incident_id = db.Column(db.Integer, primary_key=True)
     hero_id = db.Column(db.Integer, ForeignKey('hero.hero_id'))
     user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    latitude = db.Column(db.Float,unique=True, nullable=False)
+    longitude = db.Column(db.Float,unique=True, nullable=False)
     servicetype_id = db.Column(db.Integer, db.ForeignKey("service.servicetype_id"))
 
     def __repr__(self):
