@@ -6,8 +6,9 @@ from flask import Flask, request, jsonify, url_for,redirect
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
+from utils import APIException, generate_sitemap, send_sms
 from models import db,User,Hero,Incident,Service
+from twilio.twiml.messaging_response import MessagingResponse
 import requests
 from flask_jwt_simple import (
     JWTManager, jwt_required, create_jwt, get_jwt_identity,decode_jwt
@@ -15,7 +16,7 @@ from flask_jwt_simple import (
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
@@ -29,9 +30,9 @@ jwt = JWTManager(app)
 def checkjwt():
     not_protected=["/hero/login","/user/login"]
 
-    if request.path not in not_protected:
-        decoded=decode_jwt(request.cookies.get("token"))
-        print(decoded)
+    token = request.cookies.get("token")
+    if request.path not in not_protected and token is not None:
+        decoded=decode_jwt(token)
         return jsonify(decoded)
     else:         
         # this print statement let you know you are at a login page or not protected route
@@ -245,11 +246,61 @@ def handle_incident():
     response = requests.get("https://maps.googleapis.com/maps/api/geocode/json",params={'latlng':'40.714224,-73.961452','key':'AIzaSyDnPdnUPzUc0NaVzp4hS6Y_dhPSE8rvK1s'})
     response1=response.json()
     list1=response1["results"][0]["address_components"]
+    postal_code = None
     for obj in list1:
         if obj["types"][0]=="postal_code":
-            print(obj["long_name"])
+            postal_code = obj["long_name"]
+
+    if postal_code is not None:
+        # its time to send the sms to everyone at this postal code
+        heros_nearby = Hero.objects.filter(zip_code=postal_code)
+        for _hero in heros_nearby:
+            send_sms("Hello "+_hero.first_name+", someone needs your help! :) ", _hero.phone)
+
+    @app.route('/incident/response',methods=['POST'])
+    def receive_test_sms():
+        
+        incoming_message_content = request.values.get('Body', None)
+        incoming_number = request.values.get('From', None)
+
+        hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
+        hero_that_replied.children.append()
+        p.children.append(a)
+        print(str(incoming_message_content))
+        resp = MessagingResponse()
+        resp.message("Thanks!")
+        
+        return str(resp), 200
+
     
     return "incident created successfully"
+
+
+
+
+
+
+
+
+
+#### ENDPOINTS DE PRUEBA
+@app.route('/send_test_sms')
+def send_test_sms():
+    send_sms('Hello!!', '+17863267904')
+    return "Ok Baby", 200
+@app.route('/receive_test_sms',methods=['POST'])
+def receive_test_sms():
+    incoming_message_content = request.values.get('Body', None)
+    incoming_number = request.values.get('From', None)
+    my_company_number = request.values.get('To', None)
+
+    resp = MessagingResponse()
+    print(incoming_message_content)
+    msg = resp.message("Thanks! "+ str(incoming_number))
+    # Add a picture message
+    msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
+    
+    return str(resp), 200
 
 
 # this only runs if `$ python src/main.py` is executed
