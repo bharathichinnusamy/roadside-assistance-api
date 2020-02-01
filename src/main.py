@@ -189,6 +189,21 @@ def handle_heroplogin():
     else:
         return "perfectly matched" 
 
+# Service table
+@app.route('/service',methods=['POST'])
+def handle_service():
+    service1=request.get_json()
+
+    if service1 is None:
+    raise APIException ("You need to specify the request body as a json object ", status_code=400)
+    if "servicetype_name" not in service1:
+        raise APIException ("You need to specify servicetype_name", status_code=400)
+
+    sercice2=Service(servicetype_name=service1["servicetype_name"])
+    db.session.add(sercice2)
+    db.session.commit()
+    return "services created successfully"
+
 # Incident table
 @app.route('/incident',methods=['POST'])
 def handle_incident():
