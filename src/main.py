@@ -10,9 +10,8 @@ from utils import APIException, generate_sitemap, send_sms
 from models import db,User,Hero,Incident,Service
 from twilio.twiml.messaging_response import MessagingResponse
 import requests
-from flask_jwt_simple import (
-    JWTManager, jwt_required, create_jwt, get_jwt_identity,decode_jwt
-)
+from flask_jwt_simple import create_jwt,JWTManager,decode_jwt,get_jwt_identity
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -26,19 +25,14 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")  # Change this!
 jwt = JWTManager(app)
 
-@app.before_request
-def checkjwt():
-    not_protected=["/hero/login","/user/login"]
-
-    token = request.cookies.get("token")
-    if request.path not in not_protected and token is not None:
-        decoded=decode_jwt(token)
-        return jsonify(decoded)
-    else:         
-        # this print statement let you know you are at a login page or not protected route
-        print("not protected")
-        # print(decode_jwt(request.cookies.get("token")))
-        print(request.path)
+# validation with JWT
+# @app.before_request
+# def checkjwt():
+#     not_protected=["/hero/login","/user/login"]
+#     token=request.cookies.get("token")
+#     if request.path not in not_protected and token is not None:
+#         decoded=decode_jwt(token)
+#         return get_jwt_identity()
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -50,6 +44,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+# post and get methods for User
 @app.route('/user', methods=['POST','GET'])
 def handle_createread():
     if request.method=='POST':
@@ -80,6 +75,7 @@ def handle_createread():
         alluser=list(map(lambda x: x.serialize(),user2))
         return jsonify(alluser),200
 
+# put and delete methods for User
 @app.route('/user/<id>',methods=['PUT','DELETE'])
 def handle_updatedelete(id):
     if request.method=='PUT':
@@ -126,8 +122,13 @@ def handle_userlogin():
     if allitems is None:
         return "your email or password is incorrect",401
     else:
-        return "perfectly matched"
+        usertoken=create_jwt(identity=allitems.email)
+        usertoken1={"key":usertoken}
+        usertoken2=jsonify(usertoken1)
+        usertoken2.set_cookie("usertoken",usertoken,secure=True)
+        return usertoken2,200
 
+# post and get methods for Hero
 @app.route('/hero',methods=['POST','GET'])
 def createandread():
     if request.method=='POST':
@@ -160,6 +161,7 @@ def createandread():
         herodata4=list(map(lambda x: x.serialize(),herodata3))
         return jsonify(herodata4),200
 
+# put and delete methods for Hero
 @app.route('/hero/<id>',methods=['PUT','DELETE'])
 def updateanddelete(id):
     if request.method=='PUT':
@@ -206,19 +208,15 @@ def handle_heroplogin():
     heroobj=Hero.query.filter(Hero.email==herobody["email"],Hero.password==herobody["password"]).first()
 
     if heroobj is None:
-        token=create_jwt(identity="heroobj.email")
-        ret = {'jwt':token }
-        ret=jsonify(ret)
-        ret.set_cookie("token",token,secure=True)
-        return ret,200
-        # return "your email or password is incorrect"
-    else: 
-        # Identity can be any data that is json serializable
-        ret = {'jwt': create_jwt(identity=heroobj.email)}
-        return jsonify(ret), 200
-        # return "perfectly matched" 
+        return "your email or password is incorrect"
+    else:
+        token=create_jwt(identity=heroobj.email)
+        tokendata={'key':token}
+        jsontoken=jsonify(tokendata)
+        jsontoken.set_cookie("token",token,secure=True)
+        return jsontoken,200
 
-# Service table
+# post method for Service
 @app.route('/service',methods=['POST'])
 def handle_service():
     service1=request.get_json()
@@ -233,7 +231,7 @@ def handle_service():
     db.session.commit()
     return "services created successfully"
 
-# Incident table
+# post method for Incident 
 @app.route('/incident',methods=['POST'])
 def handle_incident():
     firststep=request.get_json()
