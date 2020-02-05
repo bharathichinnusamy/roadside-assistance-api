@@ -40,19 +40,14 @@ def generate_sitemap(app):
 
 def send_sms(content, phone):
     # Download the helper library from https://www.twilio.com/docs/python/install
-
-
     # Your Account Sid and Auth Token from twilio.com/console
     # DANGER! This is insecure. See http://twil.io/secure
     account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
     auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
 
     client = Client(account_sid, auth_token)
-    message = client.messages \
-                    .create(
+    client.messages.create(
                         body=content,
                         from_='+19543290404',
                         to=phone
                     )
-
-    return message
