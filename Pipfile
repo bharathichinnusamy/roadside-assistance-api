@@ -20,7 +20,6 @@ gunicorn = "*"
 mysqlclient = "*"
 requests = "*"
 flask-jwt-simple = "*"
-twillio = "*"
 twilio = "*"
 
 [requires]

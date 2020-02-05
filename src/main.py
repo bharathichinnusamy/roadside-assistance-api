@@ -10,9 +10,8 @@ from utils import APIException, generate_sitemap, send_sms
 from models import db,User,Hero,Incident,Service
 from twilio.twiml.messaging_response import MessagingResponse
 import requests
-from flask_jwt_simple import (
-    JWTManager, jwt_required, create_jwt, get_jwt_identity,decode_jwt
-)
+from flask_jwt_simple import create_jwt,JWTManager,decode_jwt,jwt_required
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -26,19 +25,14 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")  # Change this!
 jwt = JWTManager(app)
 
-@app.before_request
-def checkjwt():
-    not_protected=["/hero/login","/user/login"]
-
-    token = request.cookies.get("token")
-    if request.path not in not_protected and token is not None:
-        decoded=decode_jwt(token)
-        return jsonify(decoded)
-    else:         
-        # this print statement let you know you are at a login page or not protected route
-        print("not protected")
-        # print(decode_jwt(request.cookies.get("token")))
-        print(request.path)
+# validation with JWT
+# @app.before_request
+# def checkjwt():
+#     not_protected=["/hero/login","/user/login"]
+#     token=request.cookies.get("token")
+#     if request.path not in not_protected and token is not None:
+#         decoded=decode_jwt(token)
+#         return get_jwt_identity()
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -50,6 +44,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+# post and get methods for User
 @app.route('/user', methods=['POST','GET'])
 def handle_createread():
     if request.method=='POST':
@@ -80,7 +75,9 @@ def handle_createread():
         alluser=list(map(lambda x: x.serialize(),user2))
         return jsonify(alluser),200
 
+# put and delete methods for User
 @app.route('/user/<id>',methods=['PUT','DELETE'])
+@jwt_required
 def handle_updatedelete(id):
     if request.method=='PUT':
         obj1=User.query.get(id)
@@ -126,8 +123,13 @@ def handle_userlogin():
     if allitems is None:
         return "your email or password is incorrect",401
     else:
-        return "perfectly matched"
+        usertoken=create_jwt(identity=allitems.email)
+        usertoken1={"key":usertoken}
+        usertoken2=jsonify(usertoken1)
+        # usertoken2.set_cookie("usertoken",usertoken,secure=True)
+        return usertoken2,200
 
+# post and get methods for Hero
 @app.route('/hero',methods=['POST','GET'])
 def createandread():
     if request.method=='POST':
@@ -158,9 +160,12 @@ def createandread():
     else:
         herodata3=Hero.query.all()
         herodata4=list(map(lambda x: x.serialize(),herodata3))
+        print(herodata4)
         return jsonify(herodata4),200
 
+# put and delete methods for Hero
 @app.route('/hero/<id>',methods=['PUT','DELETE'])
+@jwt_required
 def updateanddelete(id):
     if request.method=='PUT':
         herodata5=Hero.query.get(id)
@@ -206,20 +211,17 @@ def handle_heroplogin():
     heroobj=Hero.query.filter(Hero.email==herobody["email"],Hero.password==herobody["password"]).first()
 
     if heroobj is None:
-        token=create_jwt(identity="heroobj.email")
-        ret = {'jwt':token }
-        ret=jsonify(ret)
-        ret.set_cookie("token",token,secure=True)
-        return ret,200
-        # return "your email or password is incorrect"
-    else: 
-        # Identity can be any data that is json serializable
-        ret = {'jwt': create_jwt(identity=heroobj.email)}
-        return jsonify(ret), 200
-        # return "perfectly matched" 
+        return "your email or password is incorrect"
+    else:
+        token=create_jwt(identity=heroobj.email)
+        tokendata={'key':token}
+        jsontoken=jsonify(tokendata)
+        # jsontoken.set_cookie("token",token,secure=True)
+        return jsontoken,200
 
-# Service table
+# post method for Service
 @app.route('/service',methods=['POST'])
+@jwt_required
 def handle_service():
     service1=request.get_json()
 
@@ -233,8 +235,9 @@ def handle_service():
     db.session.commit()
     return "services created successfully"
 
-# Incident table
+# post method for Incident 
 @app.route('/incident',methods=['POST'])
+@jwt_required
 def handle_incident():
     firststep=request.get_json()
     secondstep=User.query.filter(User.email==firststep["email"]).first()
@@ -257,50 +260,40 @@ def handle_incident():
         for _hero in heros_nearby:
             send_sms("Hello "+_hero.first_name+", someone needs your help! :) ", _hero.phone)
 
-    @app.route('/incident/response',methods=['POST'])
-    def receive_test_sms():
+@app.route('/incident/response',methods=['POST'])
+def receive_test_sms():
         
-        incoming_message_content = request.values.get('Body', None)
-        incoming_number = request.values.get('From', None)
+    incoming_message_content = request.values.get('Body', None)
+    incoming_number = request.values.get('From', None)
 
-        hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
-        hero_that_replied.children.append()
-        p.children.append(a)
-        print(str(incoming_message_content))
-        resp = MessagingResponse()
-        resp.message("Thanks!")
+    hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
+    hero_that_replied.children.append()
+    p.children.append(a)
+    print(str(incoming_message_content))
+    resp = MessagingResponse()
+    resp.message("Thanks!")
         
-        return str(resp), 200
-
-    
-    return "incident created successfully"
-
-
-
-
-
-
-
+    return str(resp), 200
 
 
 #### ENDPOINTS DE PRUEBA
-@app.route('/send_test_sms')
-def send_test_sms():
-    send_sms('Hello!!', '+17863267904')
-    return "Ok Baby", 200
-@app.route('/receive_test_sms',methods=['POST'])
-def receive_test_sms():
-    incoming_message_content = request.values.get('Body', None)
-    incoming_number = request.values.get('From', None)
-    my_company_number = request.values.get('To', None)
+# @app.route('/send_test_sms')
+# def send_test_sms():
+#     send_sms('Hello!!', '+17863267904')
+#     return "Ok Baby", 200
+# @app.route('/receive_test_sms',methods=['POST'])
+# def receive_test_sms():
+#     incoming_message_content = request.values.get('Body', None)
+#     incoming_number = request.values.get('From', None)
+#     my_company_number = request.values.get('To', None)
 
-    resp = MessagingResponse()
-    print(incoming_message_content)
-    msg = resp.message("Thanks! "+ str(incoming_number))
-    # Add a picture message
-    msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
+#     resp = MessagingResponse()
+#     print(incoming_message_content)
+#     msg = resp.message("Thanks! "+ str(incoming_number))
+#     # Add a picture message
+#     msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
     
-    return str(resp), 200
+#     return str(resp), 200
 
 
 # this only runs if `$ python src/main.py` is executed
