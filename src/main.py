@@ -82,7 +82,6 @@ def handle_updatedelete(id):
     if request.method=='PUT':
         obj1=User.query.get(id)
         newobj=request.get_json()
-        
         if "first_name" in newobj:
             obj1.first_name=newobj["first_name"]
         if "last_name" in newobj:
@@ -256,27 +255,50 @@ def handle_incident():
 
     if postal_code is not None:
         # its time to send the sms to everyone at this postal code
-        heros_nearby = Hero.objects.filter(zip_code=postal_code)
+        heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
         for _hero in heros_nearby:
             send_sms("Hello "+_hero.first_name+", someone needs your help! :) ", _hero.phone)
 
-@app.route('/incident/response',methods=['POST'])
-def receive_test_sms():
+# @app.route('/incident/response',methods=['POST'])
+# def receive_test_sms():
         
-    incoming_message_content = request.values.get('Body', None)
-    incoming_number = request.values.get('From', None)
+#     incoming_message_content = request.values.get('Body', None)
+#     incoming_number = request.values.get('From', None)
 
-    hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
-    hero_that_replied.children.append()
-    p.children.append(a)
-    print(str(incoming_message_content))
-    resp = MessagingResponse()
-    resp.message("Thanks!")
+#     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
+#     hero_that_replied.children.append()
+#     p.children.append(a)
+#     print(str(incoming_message_content))
+#     resp = MessagingResponse()
+#     resp.message("Thanks!")
         
-    return str(resp), 200
+#     return str(resp), 200
+
+# @app.route('/hero_response',methods=['POST'])
+# def receive_test_sms():
+#     incoming_message_content = request.values.get('Body', None)
+#     incoming_number = request.values.get('From', None)
+#     my_company_number = request.values.get('To', None)
+
+#     incident_id = int(incoming_message_content)
+
+#     incident =Incident.query.filter(incident_id=incident_id).first()
+#     hero =Hero.query.filter(phone=incoming_number).first()
+
+#     incident.hero_id = hero.id
+#     db.session.merge(incident)
+#     db.session.commit()
 
 
-#### ENDPOINTS DE PRUEBA
+#     resp = MessagingResponse()
+#     msg = resp.message("Thanks! "+ str(hero.first_name))
+#     # Add a picture message
+#     msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
+    
+#     return str(resp), 200
+
+
+# #### ENDPOINTS DE PRUEBA
 # @app.route('/send_test_sms')
 # def send_test_sms():
 #     send_sms('Hello!!', '+17863267904')
