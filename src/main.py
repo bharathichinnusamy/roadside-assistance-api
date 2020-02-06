@@ -77,7 +77,7 @@ def handle_createread():
 
 # put and delete methods for User
 @app.route('/user/<id>',methods=['PUT','DELETE'])
-@jwt_required
+# @jwt_required
 def handle_updatedelete(id):
     if request.method=='PUT':
         obj1=User.query.get(id)
@@ -164,7 +164,7 @@ def createandread():
 
 # put and delete methods for Hero
 @app.route('/hero/<id>',methods=['PUT','DELETE'])
-@jwt_required
+# @jwt_required
 def updateanddelete(id):
     if request.method=='PUT':
         herodata5=Hero.query.get(id)
@@ -220,7 +220,7 @@ def handle_heroplogin():
 
 # post method for Service
 @app.route('/service',methods=['POST'])
-@jwt_required
+# @jwt_required
 def handle_service():
     service1=request.get_json()
 
@@ -236,7 +236,7 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST'])
-@jwt_required
+# @jwt_required
 def handle_incident():
     firststep=request.get_json()
     secondstep=User.query.filter(User.email==firststep["email"]).first()
@@ -262,16 +262,14 @@ def handle_incident():
             
 @app.route('/incident/response',methods=['POST'])
 def receive_test_sms(): 
-    incoming_message_content = request.values.get('fourthstep.incident_id', None)
+    incoming_message_content = request.values.get('Body', None)
     incoming_number = request.values.get('From', None)
-    print(incoming_message_content)
-    print(incoming_number)
     gettingheroobj=Hero.query.filter(Hero.phone==incoming_number).first()
-    heroid=gettingheroobj.hero_id
-    newone=Incident.query.filter(incident_id==fourthstep.incident_id)
-    newone1=newone.hero_id=heroid
-    db.session.merge(newone1)
+    newone=Incident.query.filter(Incident.incident_id==incoming_message_content)
+    newone.hero_id=gettingheroobj.hero_id
+    db.session.merge(newone.hero_id=heroid)
     db.session.commit()
+    return "done"
 
 #     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
 #     hero_that_replied.children.append()
