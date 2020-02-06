@@ -257,18 +257,18 @@ def handle_incident():
         # its time to send the sms to everyone at this postal code
         heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
         for _hero in heros_nearby:
-            send_sms("Hello"+_hero.first_name+", someone needs your help! please reply with "+fourthstep.servicetype_id+"if you are willing to help", _hero.phone)
+            send_sms("Hello"+_hero.first_name+", someone needs your help! please reply with "+fourthstep.incident_id+"if you are willing to help", _hero.phone)
             return "success"
             
 @app.route('/incident/response',methods=['POST'])
 def receive_test_sms(): 
-    incoming_message_content = request.values.get('fourthstep.servicetype_id', None)
+    incoming_message_content = request.values.get('fourthstep.incident_id', None)
     incoming_number = request.values.get('From', None)
     print(incoming_message_content)
     print(incoming_number)
     gettingheroobj=Hero.query.filter(Hero.phone==incoming_number).first()
     heroid=gettingheroobj.hero_id
-    newone=Incident.query.filter(incident_id==fourthstep.servicetype_id)
+    newone=Incident.query.filter(incident_id==fourthstep.incident_id)
     newone1=newone.hero_id=heroid
     db.session.merge(newone1)
     db.session.commit()
