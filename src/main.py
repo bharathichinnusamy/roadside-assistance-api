@@ -264,6 +264,8 @@ def handle_incident():
 def receive_test_sms(): 
     incoming_message_content = request.values.get('Body', None)
     incoming_number = request.values.get('From', None)
+    print(incoming_number)
+    print(incoming_message_content)
     gettingheroobj=Hero.query.filter(Hero.phone==incoming_number).first()
     newone=Incident.query.filter(Incident.incident_id==incoming_message_content)
     newone.hero_id=gettingheroobj.hero_id
