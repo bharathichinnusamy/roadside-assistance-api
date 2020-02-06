@@ -268,7 +268,7 @@ def receive_test_sms():
     print(incoming_message_content)
     gettingheroobj=Hero.query.filter(Hero.phone==incoming_number).first()
     print(gettingheroobj.hero_id)
-    newone=Incident.query.filter(Incident.incident_id==int(incoming_message_content))
+    newone=Incident.query.filter(Incident.incident_id==int(incoming_message_content)).first()
     print(newone.hero_id)
     newone.hero_id=gettingheroobj.hero_id
     db.session.merge(newone)
