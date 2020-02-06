@@ -258,12 +258,15 @@ def handle_incident():
         heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
         for _hero in heros_nearby:
             send_sms("Hello "+_hero.first_name+", someone needs your help! :) ", _hero.phone)
-
-# @app.route('/incident/response',methods=['POST'])
-# def receive_test_sms():
+            return "success"
+            
+@app.route('/incident/response',methods=['POST'])
+def receive_test_sms():
         
-#     incoming_message_content = request.values.get('Body', None)
-#     incoming_number = request.values.get('From', None)
+    incoming_message_content = request.values.get('Body', None)
+    incoming_number = request.values.get('From', None)
+    print(incoming_message_content)
+    print(incoming_number)
 
 #     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
 #     hero_that_replied.children.append()
