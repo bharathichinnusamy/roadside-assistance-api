@@ -275,7 +275,7 @@ def receive_test_sms():
     db.session.commit()
     resp=MessagingResponse()
     resp.message("thank you")
-    return "done"
+    return str(resp)
 
 #     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
 #     hero_that_replied.children.append()
