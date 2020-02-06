@@ -257,7 +257,7 @@ def handle_incident():
         # its time to send the sms to everyone at this postal code
         heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
         for _hero in heros_nearby:
-            send_sms("Hello"+_hero.first_name+", someone needs your help! please reply with "+fourthstep.incident_id+"if you are willing to help", _hero.phone)
+            send_sms("Hello"+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+"if you are willing to help", _hero.phone)
             return "success"
             
 @app.route('/incident/response',methods=['POST'])
