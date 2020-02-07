@@ -276,7 +276,7 @@ def receive_test_sms():
     resp=MessagingResponse()
     userdetail=User.query.filter(User.user_id==newone.user_id)
 
-    resp.message("Thank you,here's a user's details..\nFirst Name:userdetail.first_name\nPhone No:userdetail.phone\nhttp://maps.google.com/?q=40.714224,-73.961452")
+    resp.message("Thank you,here's a user's details..\nFirst Name:"userdetail.first_name"\nPhone No:"userdetail.phone"\nhttp://maps.google.com/?q=40.714224,-73.961452")
     return str(resp),200
 
 
