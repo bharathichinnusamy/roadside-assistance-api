@@ -275,7 +275,7 @@ def receive_test_sms():
     db.session.commit()
     resp=MessagingResponse()
     userdetail=User.query.filter(User.user_id==newone.user_id).first()
-    resp.message("Thank you,here's a user's details..\nFirst Name:"+userdetail.first_name+"\nPhone No:"+userdetail.phone+"\nhttp://maps.google.com/?q="+newone.latitude+','+newone.longitude)
+    resp.message("Thank you,here's a user's details..\nFirst Name:"+userdetail.first_name+"\nPhone No:"+userdetail.phone+"\nhttp://maps.google.com/?q="+str(newone.latitude)+','+str(newone.longitude))
     return str(resp),200
 
 
