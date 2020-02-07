@@ -273,62 +273,9 @@ def receive_test_sms():
     newone.hero_id=gettingheroobj.hero_id
     db.session.merge(newone)
     db.session.commit()
-    return "dones"
-    # resp=MessagingResponse()
-    # resp.message("thank you")
-    # return str(resp)
-
-#     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
-#     hero_that_replied.children.append()
-#     p.children.append(a)
-#     print(str(incoming_message_content))
-#     resp = MessagingResponse()
-#     resp.message("Thanks!")
-        
-#     return str(resp), 200
-
-# @app.route('/hero_response',methods=['POST'])
-# def receive_test_sms():
-#     incoming_message_content = request.values.get('Body', None)
-#     incoming_number = request.values.get('From', None)
-#     my_company_number = request.values.get('To', None)
-
-#     incident_id = int(incoming_message_content)
-
-#     incident =Incident.query.filter(incident_id=incident_id).first()
-#     hero =Hero.query.filter(phone=incoming_number).first()
-
-#     incident.hero_id = hero.id
-#     db.session.merge(incident)
-#     db.session.commit()
-
-
-#     resp = MessagingResponse()
-#     msg = resp.message("Thanks! "+ str(hero.first_name))
-#     # Add a picture message
-#     msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
-    
-#     return str(resp), 200
-
-
-# #### ENDPOINTS DE PRUEBA
-# @app.route('/send_test_sms')
-# def send_test_sms():
-#     send_sms('Hello!!', '+17863267904')
-#     return "Ok Baby", 200
-# @app.route('/receive_test_sms',methods=['POST'])
-# def receive_test_sms():
-#     incoming_message_content = request.values.get('Body', None)
-#     incoming_number = request.values.get('From', None)
-#     my_company_number = request.values.get('To', None)
-
-#     resp = MessagingResponse()
-#     print(incoming_message_content)
-#     msg = resp.message("Thanks! "+ str(incoming_number))
-#     # Add a picture message
-#     msg.media("https://farm8.staticflickr.com/7090/6941316406_80b4d6d50e_z_d.jpg")
-    
-#     return str(resp), 200
+    resp=MessagingResponse()
+    resp.message("thank you")
+    return str(resp),200
 
 
 # this only runs if `$ python src/main.py` is executed
