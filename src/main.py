@@ -245,7 +245,7 @@ def handle_incident():
     db.session.add(fourthstep)
     db.session.commit()
 # getting a User's zipcode by using latitude & longitude
-    response = requests.get("https://maps.googleapis.com/maps/api/geocode/json",params={'latlng':'40.714224,-73.961452','key':'AIzaSyDnPdnUPzUc0NaVzp4hS6Y_dhPSE8rvK1s'})
+    response = requests.get("https://maps.googleapis.com/maps/api/geocode/json",params={'latlng':firststep["latitude"]+','+firststep["longitude"],'key':'AIzaSyDnPdnUPzUc0NaVzp4hS6Y_dhPSE8rvK1s'})
     response1=response.json()
     list1=response1["results"][0]["address_components"]
     postal_code = None
