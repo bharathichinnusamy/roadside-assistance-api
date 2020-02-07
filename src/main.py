@@ -274,7 +274,7 @@ def receive_test_sms():
     db.session.merge(newone)
     db.session.commit()
     resp=MessagingResponse()
-    resp.message("Thank you,here's user's details%0aFirst Name:Bharathi%0aLast Name:Chinnusamy%0ahttp://maps.google.com/?q=40.714224,-73.961452")
+    resp.message("Thank you,here's user's details\nFirst Name:Bharathi\nLast Name:Chinnusamy\nhttp://maps.google.com/?q=40.714224,-73.961452")
     return str(resp),200
 
 
