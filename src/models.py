@@ -17,7 +17,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(80), unique=True, nullable=False)
-    share_phone = db.Column(db.Integer, nullable=False)
+    share_phone = db.Column(db.Boolean, nullable=False)
     children = relationship("Incident", backref="user")
 
     def __repr__(self):
@@ -41,7 +41,7 @@ class Hero(db.Model):
     password = db.Column(db.String(120), unique=True, nullable=False)
     zip_code = db.Column(db.String(80), unique=False, nullable=False)
     phone = db.Column(db.String(80), unique=True, nullable=False)
-    share_phone = db.Column(db.Integer, nullable=False)
+    share_phone = db.Column(db.Boolean, nullable=False)
     children = relationship("Incident", backref="hero")
 
     def __repr__(self):
@@ -81,8 +81,8 @@ class Incident(TimestampMixin,db.Model):
     incident_id = db.Column(db.Integer, primary_key=True)
     hero_id = db.Column(db.Integer, ForeignKey('hero.hero_id'))
     user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
-    latitude = db.Column(db.Float,unique=True, nullable=False)
-    longitude = db.Column(db.Float,unique=True, nullable=False)
+    latitude = db.Column(db.Float,unique=False, nullable=False)
+    longitude = db.Column(db.Float,unique=False, nullable=False)
     servicetype_id = db.Column(db.Integer, db.ForeignKey("service.servicetype_id"))
 
     def __repr__(self):
