@@ -273,9 +273,10 @@ def receive_test_sms():
     newone.hero_id=gettingheroobj.hero_id
     db.session.merge(newone)
     db.session.commit()
-    resp=MessagingResponse()
-    resp.message("thank you")
-    return str(resp)
+    return "dones"
+    # resp=MessagingResponse()
+    # resp.message("thank you")
+    # return str(resp)
 
 #     hero_that_replied = Hero.objects.filter(phone=incoming_number).first()
 #     hero_that_replied.children.append()
