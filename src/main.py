@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for,redirect
+from flask import Flask, request, jsonify, url_for,redirect,make_response
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS,cross_origin
