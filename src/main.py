@@ -252,6 +252,8 @@ def handle_service():
 # @jwt_required
 def handle_incident():
     firststep=request.get_json()
+    print(firststep)
+    print(firststep["email"])
     secondstep=User.query.filter(User.email==firststep["email"]).first()
     thridstep=Service.query.filter(Service.servicetype_name==firststep["servicetype_name"]).first()
     fourthstep=Incident(user_id=secondstep.user_id,servicetype_id=thridstep.servicetype_id,latitude=firststep["latitude"],longitude=firststep["longitude"])
