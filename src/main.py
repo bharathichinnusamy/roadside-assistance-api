@@ -248,7 +248,6 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST'])
-@cross_origin()
 # @jwt_required
 def handle_incident():
     firststep=request.get_json()
