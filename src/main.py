@@ -248,6 +248,7 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST','OPTIONS'])
+@cross_origin()
 # @jwt_required
 def handle_incident():
     if request.method == "OPTIONS":
