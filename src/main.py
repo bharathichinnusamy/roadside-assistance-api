@@ -25,15 +25,6 @@ cors = CORS(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")  # Change this!
 jwt = JWTManager(app)
 
-# validation with JWT
-# @app.before_request
-# def checkjwt():
-#     not_protected=["/hero/login","/user/login"]
-#     token=request.cookies.get("token")
-#     if request.path not in not_protected and token is not None:
-#         decoded=decode_jwt(token)
-#         return get_jwt_identity()
-
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -43,7 +34,6 @@ def handle_invalid_usage(error):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
-
 
 # post and get methods for User
 @app.route('/user', methods=['POST','GET'])
@@ -239,12 +229,6 @@ def handle_service():
 @app.route('/incident',methods=['POST'])
 # @jwt_required
 def handle_incident():
-    # if request.method == "OPTIONS":
-    #     response = make_response()
-    #     response.headers.add("Access-Control-Allow-Origin", "*")
-    #     response.headers.add('Access-Control-Allow-Headers', "*")
-    #     response.headers.add('Access-Control-Allow-Methods', "*")
-    #     return response
     firststep=request.get_json()
     print(firststep)
     print(firststep["email"])
