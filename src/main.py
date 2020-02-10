@@ -44,11 +44,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.after_request
-def after_request(response):
-    header=response.headers
-    header['Access-Control-Allow-Origin']="*"
-    return response
+
 # post and get methods for User
 @app.route('/user', methods=['POST','GET'])
 @cross_origin()
@@ -279,8 +275,9 @@ def handle_incident():
         heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
         for _hero in heros_nearby:
             print(_hero)
-            send_sms("Hello "+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+" if you are willing to help", _hero.phone)
-            return "success"
+            send_sms("Hello "+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+" if you are willing to help", _hero.phone)   
+            response['Access-Control-Allow-Origin']="*"
+            return response
             
 @app.route('/incident/response',methods=['POST'])
 def receive_test_sms(): 
