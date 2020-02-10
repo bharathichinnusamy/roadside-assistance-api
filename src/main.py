@@ -236,15 +236,15 @@ def handle_service():
     return "services created successfully"
 
 # post method for Incident 
-@app.route('/incident',methods=['POST','OPTIONS'])
+@app.route('/incident',methods=['POST'])
 # @jwt_required
 def handle_incident():
-    if request.method == "OPTIONS":
-        response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add('Access-Control-Allow-Headers', "*")
-        response.headers.add('Access-Control-Allow-Methods', "*")
-        return response
+    # if request.method == "OPTIONS":
+    #     response = make_response()
+    #     response.headers.add("Access-Control-Allow-Origin", "*")
+    #     response.headers.add('Access-Control-Allow-Headers', "*")
+    #     response.headers.add('Access-Control-Allow-Methods', "*")
+    #     return response
     firststep=request.get_json()
     print(firststep)
     print(firststep["email"])
