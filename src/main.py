@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app)
 
 # Setup the Flask-JWT-Simple extension
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")  # Change this!
@@ -47,7 +47,6 @@ def sitemap():
 
 # post and get methods for User
 @app.route('/user', methods=['POST','GET'])
-@cross_origin()
 def handle_createread():
     if request.method=='POST':
         body = request.get_json()
@@ -79,7 +78,6 @@ def handle_createread():
 
 # put and delete methods for User
 @app.route('/user/<id>',methods=['PUT','DELETE'])
-@cross_origin()
 # @jwt_required
 def handle_updatedelete(id):
     if request.method=='PUT':
@@ -110,7 +108,6 @@ def handle_updatedelete(id):
 
 # Login end point for User      
 @app.route('/user/login',methods=['POST'])
-@cross_origin()
 def handle_userlogin():
     item=request.get_json()
 
@@ -134,7 +131,6 @@ def handle_userlogin():
 
 # post and get methods for Hero
 @app.route('/hero',methods=['POST','GET'])
-@cross_origin()
 def createandread():
     if request.method=='POST':
         herodata1=request.get_json()
@@ -169,7 +165,6 @@ def createandread():
 
 # put and delete methods for Hero
 @app.route('/hero/<id>',methods=['PUT','DELETE'])
-@cross_origin()
 # @jwt_required
 def updateanddelete(id):
     if request.method=='PUT':
@@ -203,7 +198,6 @@ def updateanddelete(id):
 
 # Login end point for Hero
 @app.route('/hero/login',methods=['POST'])
-@cross_origin()
 def handle_heroplogin():
     herobody=request.get_json() 
 
@@ -227,7 +221,6 @@ def handle_heroplogin():
 
 # post method for Service
 @app.route('/service',methods=['POST'])
-@cross_origin()
 # @jwt_required
 def handle_service():
     service1=request.get_json()
@@ -244,7 +237,6 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST','OPTIONS'])
-@cross_origin()
 # @jwt_required
 def handle_incident():
     if request.method == "OPTIONS":
@@ -276,8 +268,7 @@ def handle_incident():
         for _hero in heros_nearby:
             print(_hero)
             send_sms("Hello "+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+" if you are willing to help", _hero.phone)   
-            response['Access-Control-Allow-Origin']="*"
-            return response
+            return "success"
             
 @app.route('/incident/response',methods=['POST'])
 def receive_test_sms(): 
