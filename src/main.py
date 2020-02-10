@@ -277,7 +277,6 @@ def handle_incident():
             return "success"
             
 @app.route('/incident/response',methods=['POST'])
-@cross_origin()
 def receive_test_sms(): 
     incoming_message_content = request.values.get('Body', None)
     incoming_number = request.values.get('From', None)
