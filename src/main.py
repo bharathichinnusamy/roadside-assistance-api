@@ -5,7 +5,7 @@ import os
 from flask import Flask, request, jsonify, url_for,redirect
 from flask_migrate import Migrate
 from flask_swagger import swagger
-from flask_cors import CORS
+from flask_cors import CORS,cross_origin
 from utils import APIException, generate_sitemap, send_sms
 from models import db,User,Hero,Incident,Service
 from twilio.twiml.messaging_response import MessagingResponse
@@ -46,6 +46,7 @@ def sitemap():
 
 # post and get methods for User
 @app.route('/user', methods=['POST','GET'])
+@cross_origin()
 def handle_createread():
     if request.method=='POST':
         body = request.get_json()
@@ -77,6 +78,7 @@ def handle_createread():
 
 # put and delete methods for User
 @app.route('/user/<id>',methods=['PUT','DELETE'])
+@cross_origin()
 # @jwt_required
 def handle_updatedelete(id):
     if request.method=='PUT':
@@ -107,6 +109,7 @@ def handle_updatedelete(id):
 
 # Login end point for User      
 @app.route('/user/login',methods=['POST'])
+@cross_origin()
 def handle_userlogin():
     item=request.get_json()
 
@@ -130,6 +133,7 @@ def handle_userlogin():
 
 # post and get methods for Hero
 @app.route('/hero',methods=['POST','GET'])
+@cross_origin()
 def createandread():
     if request.method=='POST':
         herodata1=request.get_json()
@@ -164,6 +168,7 @@ def createandread():
 
 # put and delete methods for Hero
 @app.route('/hero/<id>',methods=['PUT','DELETE'])
+@cross_origin()
 # @jwt_required
 def updateanddelete(id):
     if request.method=='PUT':
@@ -197,6 +202,7 @@ def updateanddelete(id):
 
 # Login end point for Hero
 @app.route('/hero/login',methods=['POST'])
+@cross_origin()
 def handle_heroplogin():
     herobody=request.get_json() 
 
@@ -220,6 +226,7 @@ def handle_heroplogin():
 
 # post method for Service
 @app.route('/service',methods=['POST'])
+@cross_origin()
 # @jwt_required
 def handle_service():
     service1=request.get_json()
@@ -236,6 +243,7 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST'])
+@cross_origin()
 # @jwt_required
 def handle_incident():
     firststep=request.get_json()
@@ -261,6 +269,7 @@ def handle_incident():
             return "success"
             
 @app.route('/incident/response',methods=['POST'])
+@cross_origin()
 def receive_test_sms(): 
     incoming_message_content = request.values.get('Body', None)
     incoming_number = request.values.get('From', None)
