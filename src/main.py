@@ -44,6 +44,11 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+@app.after_request
+def after_request(response):
+    header=response.headers
+    header['Access-Control-Allow-Origin']="*"
+    return response
 # post and get methods for User
 @app.route('/user', methods=['POST','GET'])
 @cross_origin()
