@@ -227,7 +227,7 @@ def handle_service():
 
 # post method for Incident 
 @app.route('/incident',methods=['POST'])
-# @jwt_required
+@jwt_required
 def handle_incident():
     firststep=request.get_json()
     print(firststep)
