@@ -248,7 +248,7 @@ def handle_incident():
     print(postal_code)
     if postal_code is not None:
         # its time to send the sms to everyone at this postal code
-        heros_nearby = Hero.query.filter(Hero.zip_code==postal_code)
+        heros_nearby = Hero.query.filter(Hero.zip_code==postal_code).all()
         for _hero in heros_nearby:
             print(_hero)
             send_sms("Hello "+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+" if you are willing to help", _hero.phone)   
