@@ -252,7 +252,7 @@ def handle_incident():
         for _hero in heros_nearby:
             print(_hero)
             send_sms("Hello "+_hero.first_name+", someone needs your help! please reply with "+str(fourthstep.incident_id)+" if you are willing to help", _hero.phone)   
-            return "success"
+         return "success"   
             
 @app.route('/incident/response',methods=['POST'])
 def receive_test_sms(): 
